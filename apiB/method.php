@@ -84,42 +84,48 @@ class Cart
         echo json_encode($response);
     }
 
-    function update_cart($id)
-    {
-        global $mysqli;
-        $arrcheckpost = array('product_name' => '', 'product_size' => '', 'product_price' => '', 'product_image' => '', 'qty' => '', 'total_price' => '', 'product_code' => '');
-        $hitung = count(array_intersect_key($_POST, $arrcheckpost));
-        if ($hitung == count($arrcheckpost)) {
-            $result = mysqli_query($mysqli, "UPDATE cart SET
-              product_name = '$_POST[product_name]',
-              product_size = '$_POST[product_size]',
-              product_price = '$_POST[product_price]',
-              product_image = '$_POST[product_image]',
-              qty = '$_POST[qty]',
-              total_price = '$_POST[total_price]',
-              product_code = '$_POST[product_code]'
-              WHERE id='$id'");
+    function update_cart($product_code)
+{
+    global $mysqli;
+    $arrcheckpost = array('product_code' => '');
+    $hitung = count(array_intersect_key($_POST, $arrcheckpost));
+    $response = []; // Declare and initialize $response variable
 
-            if ($result) {
-                $response = array(
-                    'status' => 1,
-                    'message' => 'Shoes Updated Successfully.'
-                );
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Shoes Updation Failed.'
-                );
-            }
+    if ($hitung == count($arrcheckpost)) {
+        if (isset($_POST['product_code'])) {
+            $product_code = $_POST['product_code'];
         } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Parameter Do Not Match'
-            );
+            return;
         }
-        header('Content-Type: application/json');
-        echo json_encode($response);
+        
+        $query = "UPDATE product
+        JOIN cart ON product.product_code = cart.product_code
+        SET product.product_qty = product.product_qty - cart.qty
+        WHERE product.product_code = '$product_code';
+        ";
+        $result = mysqli_query($mysqli, $query);
+        
+        $query1 = "DELETE FROM `product` WHERE `product_code` = '$product_code' AND `product_qty` = 1";
+        $result1 = mysqli_query($mysqli, $query1);
+        
+        $query2 = "DELETE FROM `cart` WHERE `product_code` = '$product_code'";
+        $result2 = mysqli_query($mysqli, $query2);
+        
+        if ($result || $result1 && $result2) {
+            $response["success"] = "true";
+        } else {
+            $response["success"] = "false";
+        }
+    } else {
+        $response = array(
+            'status' => 0,
+            'message' => 'Parameter Do Not Match'
+        );
     }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+}
+
 
     function delete_cart($id)
     {
@@ -140,4 +146,3 @@ class Cart
         echo json_encode($response);
     }
 }
-?>

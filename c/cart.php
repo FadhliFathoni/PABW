@@ -63,7 +63,7 @@
             .catch(error => console.error(error));
     </script>
     <div class="form" style="display: flex;justify-content: end;margin-right: 50px;">
-        <form action="" method="post">
+        <form action="http://localhost/sepatu/PABW/apiB/apiCart.php" method="post">
             <input type="text" name="product_code" placeholder="Kode Produk">
             <button type="submit">Checkout</button>
         </form>
@@ -73,36 +73,4 @@
 
 </html>
 
-<?php
-require_once "../conect.php";
-$con = dbconnection();
 
-if (isset($_POST['product_code'])) {
-    $product_code = $_POST['product_code'];
-} else {
-    return;
-}
-
-$query = "UPDATE product
-JOIN cart ON product.product_code = cart.product_code
-SET product.product_qty = product.product_qty - cart.qty
-WHERE product.product_code = '$product_code';
-";
-$exe = mysqli_query($con, $query);
-
-$query = "DELETE FROM `product` WHERE `product_code` = '$product_code' AND `product_qty` = 1";
-$exe2 = mysqli_query($con, $query);
-
-$query = "DELETE FROM `cart` WHERE `product_code` = '$product_code'";
-$exe3 = mysqli_query($con, $query);
-
-$arr = [];
-if ($exe || $exe2 && $exe3) {
-    $arr["success"] = "true";
-} else {
-    $arr["success"] = "false";
-}
-
-?>
-
-?>

@@ -4,19 +4,19 @@ $cart = new Cart();
 $request_method = $_SERVER["REQUEST_METHOD"];
 switch ($request_method) {
    case 'GET':
-      if (!empty($_GET["id"])) {
-         $id = intval($_GET["id"]);
-         $cart->get_cart_by_id($id);
+      if (!empty($_GET["product_code"])) {
+         $product_code = intval($_GET["product_code"]);
+         $cart->update_cart($product_code);
       } else {
          $cart->get_cart();
       }
       break;
    case 'POST':
-      if (!empty($_GET["id"])) {
-         $id = intval($_GET["id"]);
-         $cart->update_cart($id);
-      } else {
+      if (!empty($_POST["product_code"]) && !empty($_POST["qty"])) {
          $cart->insert_cart();
+      } else {
+         $product_code = intval($_POST["product_code"]);
+         $cart->update_cart($product_code);
       }
       break;
    case 'DELETE':
