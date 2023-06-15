@@ -54,7 +54,7 @@
           $('<td>').text(item.product_size).appendTo(row);
           $('<td>').text(item.product_price).appendTo(row);
           $('<td>').text(item.product_qty).appendTo(row);
-          $('<td>').append($('<img>').attr('src', item.img).attr('alt', 'Foto').attr('height', '100')).appendTo(row);
+          $('<td>').append($('<img>').attr('src', item.product_image).attr('alt', 'Foto').attr('height', '100')).appendTo(row);
           $('<td>').text(item.product_code).appendTo(row);
         });
       });
